@@ -1,0 +1,86 @@
+CREATE TABLE Musician 
+(
+    SSN INT PRIMARY KEY, 
+    Name VARCHAR(30),
+    Address VARCHAR(30), 
+    Phone_number VARCHAR(30)
+);
+
+CREATE TABLE Instrument
+(
+    Instrument_id INT PRIMARY KEY, 
+    Name VARCHAR(30),
+    Musical_key VARCHAR(10),
+    SSN INT,
+    FOREIGN KEY(SSN) REFERENCES Musician(SSN)
+);
+
+CREATE TABLE Album
+(
+    Album_id INT PRIMARY KEY,
+    Album_title VARCHAR(50),
+    Format VARCHAR(5),
+    Copyright_date VARCHAR(50),
+    Album_identifier INT
+);
+
+CREATE TABLE Songs
+(
+    Song_title VARCHAR(30) PRIMARY KEY,
+    Author INT,
+    FOREIGN KEY(Author) REFERENCES Album(Album_id)
+);
+
+CREATE TABLE Play
+(
+    SSN INT,
+    Instrument_id INT,
+    PRIMARY KEY(SSN, Instrument_id),
+    FOREIGN KEY(SSN) REFERENCES Musician(SSN),
+    FOREIGN KEY(Instrument_id) REFERENCES Instrument(Instrument_id)
+);
+
+
+CREATE TABLE Performs
+(
+    SSN INT,
+    Song_title VARCHAR(30),
+    PRIMARY KEY(SSN, Song_title),
+    FOREIGN KEY(SSN) REFERENCES Musician(SSN),
+    FOREIGN KEY(Song_title) REFERENCES Songs(Song_title)
+);
+
+CREATE TABLE Appears
+(
+    Song_title VARCHAR(30),
+    Album_id INT,
+    PRIMARY KEY(Song_title, Album_id),
+    FOREIGN KEY(Song_title) REFERENCES Songs(Song_title),
+    FOREIGN KEY(Album_id) REFERENCES Album(Album_id)
+);
+
+CREATE TABLE Produces
+(
+    SSN INT,
+    Album_id INT,
+    PRIMARY KEY(SSN, Album_id),
+    FOREIGN KEY(SSN) REFERENCES Musician(SSN),
+    FOREIGN KEY(Album_id) REFERENCES Album(Album_id)
+);
+
+INSERT INTO Musician VALUES(1, 'Alex', '2222 Mountain Ave', '909-999-7777'); 
+INSERT INTO Musician VALUES(2, 'Jonathan', '3333 Speedhill Ave', '909-111-7777');
+INSERT INTO Musician VALUES(3, 'Chris', '4444 Virus Blvd', '909-222-7777');
+
+INSERT INTO Instrument VALUES(1, 'Trumbone', 'C', 1);
+INSERT INTO Instrument VALUES(2, 'Ocarina', 'C-flat', 1);
+INSERT INTO Instrument VALUES(3, 'Piano', 'C5', 3);
+
+INSERT INTO Album VALUES(1, 'The End So Far', 'CD', '9/30/2022', 7);
+INSERT INTO Album VALUES(2, 'The Nothing', 'CD', '9/13/2019', 13);
+INSERT INTO Album VALUES(3, 'Disguise', 'CD', '6/7/2019', 5);
+INSERT INTO Album VALUES(4, 'Toxicity', 'MC', '9/4/2001', 2);
+
+INSERT INTO Songs VALUES('Adderall', 1);
+INSERT INTO Songs VALUES('Cold', 2);
+INSERT INTO Songs VALUES('Thoughts & Prayers', 3);

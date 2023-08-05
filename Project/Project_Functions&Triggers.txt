@@ -1,0 +1,66 @@
+A. CREATE OR REPLACE FUNCTION cd_Album() RETURNS REAL AS '
+	DECLARE
+		total_formats INTEGER := 0;
+		cd_formats INTEGER := 0;
+		percentage REAL := 0.0;
+		row_data ALBUM%ROWTYPE;
+	BEGIN
+		FOR row_data IN SELECT * FROM ALBUM
+		LOOP
+			total_formats := total_formats + 1;
+			IF row_data.Format=''CD''
+				THEN
+					cd_formats := cd_formats + 1;
+			END IF;
+		END LOOP;
+	percentage := cd_formats / (total_formats * 1.0);
+	RETURN percentage;
+	END;
+' LANGUAGE 'plpgsql';
+
+B. CREATE OR REPLACE FUNCTION total_songs() RETURNS INTEGER AS '
+	DECLARE
+		song_total INTEGER := 0;
+		row_data SONGS%ROWTYPE;
+	BEGIN
+		FOR row_data IN SELECT * FROM SONGS
+		LOOP
+			song_total := song_total + 1;
+		END LOOP;
+	RETURN song_total;
+	END;
+' LANGUAGE 'plpgsql';
+
+C. CREATE OR REPLACE FUNCTION remove_album() RETURNS TRIGGER AS '
+	DECLARE
+		song_total INTEGER := 0;
+		row_data SONGS%ROWTYPE;
+	BEGIN
+		FOR row_data IN SELECT * FROM SONGS
+		LOOP
+			song_total := song_total + 1;
+		END LOOP;
+		IF song_total = 0
+		THEN
+			DELETE FROM ALBUM a WHERE a.Aid=OLD.Aid;
+		END IF;
+	END;
+' LANGUAGE 'plpgsql';
+
+D. CREATE OR REPLACE FUNCTION song_limit() RETURNS TRIGGER AS '
+	DECLARE
+		song_total INTEGER := 0;
+		row_data SONGS%ROWTYPE;
+	BEGIN
+		FOR row_data IN SELECT * FROM SONGS S WHERE S.Author = NEW.Author
+		LOOP
+			song_total := song_total + 1;
+		END LOOP;
+		IF song_total >= 15
+				THEN
+					RAISE EXCEPTION ''Limit Reached. Cannot insert more than 15 songs'';
+		END IF;
+	RETURN NEW;
+	END;
+' LANGUAGE 'plpgsql';
+
